@@ -187,6 +187,7 @@ func xieChengHua (k int, ch chan int) {
     
 	
 func main() {
+    T1 := time.Now()
     runtime.GOMAXPROCS(4)
     chs := make([]chan int, 4)
 	for j:=0;j<4;j++ {
@@ -196,5 +197,7 @@ func main() {
 	for _, ch := range(chs) {
 	    <- ch
 	}
+	T2 := time.Now()
+	fmt.Println("程序总耗时",T2.Sub(T1))
     
 }
