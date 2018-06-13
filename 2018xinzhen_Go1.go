@@ -2,9 +2,9 @@ package main
 
 
 import (
-
 	"fmt"
-
+	"runtime"
+	"time"
 )
 
 func jizhi (q [4]int) (int, int) {
@@ -22,8 +22,7 @@ func jizhi (q [4]int) (int, int) {
     return max, min
 }
 
-
-func checkResult(a [10]int, ch chan int) {
+func checkResult(a [10]int) {
     var i = 1
 	var sorted [4]int
 	for _, m := range a {
@@ -111,7 +110,7 @@ func checkResult(a [10]int, ch chan int) {
 	    case 1:
 		    if (a[6]-a[0])>1 || (a[6]-a[0])< -1 {i++}
 		case 2:
-		    if (a[4]-a[0])>1 || (a[4]-a[0])< -1  {i++}
+		    if (a[4]-a[0])>1 || (a[4]-a[0])< -1 {i++}
 		case 3:
 		    if (a[1]-a[0])>1 || (a[1]-a[0])< -1 {i++}
 		case 4:
@@ -152,19 +151,14 @@ func checkResult(a [10]int, ch chan int) {
 		            fmt.Printf("D")
 	        }
 		}
+		fmt.Printf("\n")
 	}
-	ch <- 1
 }
-	
 
-
-
-func main() {
-
+func xieChengHua (k int, ch chan int) {
+    t1 := time.Now()
 	var answer [10]int
-	chs := make([]chan int, 1048576)
-	j:=0
-	for answer[0] = 1; answer[0]<5; answer[0]++ {
+	answer[0] = k
 		for answer[1] = 1; answer[1]<5; answer[1]++ {
 			for answer[2] = 1; answer[2]<5; answer[2]++ {
 				for answer[3] = 1; answer[3]<5; answer[3]++ {
@@ -174,11 +168,7 @@ func main() {
 								for answer[7] = 1; answer[7]<5; answer[7]++ {
 									for answer[8] = 1; answer[8]<5; answer[8]++ {
 										for answer[9] = 1; answer[9]<5; answer[9]++ {
-										chs[j] = make(chan int)
-									    
-										go checkResult(answer, chs[j])
-										j++
-										
+										    checkResult(answer)
 										}
 									}
 								}
@@ -187,9 +177,24 @@ func main() {
 					}
 				}
 			}
-		}
-	}
-    for _, ch := range(chs) {
+        }
+	t2 := time.Now()
+	fmt.Println("协程",k,"所用时间",t2.Sub(t1))
+	ch <- 1
+}
+	
+    
+    
+	
+func main() {
+    runtime.GOMAXPROCS(4)
+    chs := make([]chan int, 4)
+	for j:=0;j<4;j++ {
+	    chs[j] = make(chan int)
+		go xieChengHua(j+1,chs[j])
+    }
+	for _, ch := range(chs) {
 	    <- ch
 	}
+    
 }

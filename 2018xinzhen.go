@@ -4,7 +4,7 @@ package main
 import (
 
 	"fmt"
-
+    "time"
 )
 
 func jizhi (q [4]int) (int, int) {
@@ -153,6 +153,7 @@ func checkResult(a [10]int) {
 		            fmt.Printf("D")
 	        }
 		}
+		fmt.Printf("\n")
 	}
 }
 	
@@ -160,7 +161,7 @@ func checkResult(a [10]int) {
 
 
 func main() {
-
+    t1 := time.Now()
 	var answer [10]int
 	for answer[0] = 1; answer[0]<5; answer[0]++ {
 		for answer[1] = 1; answer[1]<5; answer[1]++ {
@@ -185,5 +186,7 @@ func main() {
 			}
 		}
 	}
+	t2 := time.Now()
+	fmt.Println("耗时:",t2.Sub(t1))
     
 }
