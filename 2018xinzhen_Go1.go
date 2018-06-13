@@ -179,7 +179,7 @@ func xieChengHua (k int, ch chan int) {
 			}
         }
 	t2 := time.Now()
-	fmt.Println("协程",k,"所用时间",t2.Sub(t1))
+	fmt.Println("协程",k,"耗时",t2.Sub(t1))
 	ch <- 1
 }
 	
