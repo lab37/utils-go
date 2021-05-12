@@ -2,15 +2,49 @@ package main
 
 import (
 	"fmt"
-	"io"
-	"net"
+	//"io"
+	//"net"
 	"net/http"
 	"strings"
-	"crypto/tls"
+	//"crypto/tls"
+	"crypto/md5"
 	"net/url"
+	"sort"
+	"bytes"
+	"encoding/hex"
 )
 
 type Pxy struct {}
+
+func getMd5(s string) string {
+    h := md5.New()
+    h.Write([]byte(s))
+    return hex.EncodeToString(h.Sum(nil))
+}
+
+func makeParams(params map[string][]string, appKey string) {  
+    delete(params,"sign")
+	params["key"] = []string{appKey}
+    var s, p string  
+    var keys []string
+    b := bytes.Buffer{}
+    for k, _ := range params {  
+        if k != "sign" {  
+            keys = append(keys, strings.ToUpper(k))  
+        }  
+    } 	
+    sort.Strings(keys)  
+    for _, v := range keys {  
+        b.WriteString(strings.ToLower(v))
+        b.WriteString("=")		
+        b.WriteString(url.QueryEscape(params[strings.ToLower(v)][0]))
+        b.WriteString("&")		
+    }  
+    s = b.String()  
+    p = strings.TrimRight(s, "&")
+	sign := getMd5(p)
+	fmt.Println(sign,p)
+}
 
 func (p *Pxy) ServeHTTP(nRw http.ResponseWriter, oReq *http.Request) {
     fmt.Println("接收到的URL为:",oReq.URL)
@@ -18,8 +52,10 @@ func (p *Pxy) ServeHTTP(nRw http.ResponseWriter, oReq *http.Request) {
 	fmt.Println("接收到请求头中的Content-Type为：",oReq.Header.Get("Content-Type"))
 	fmt.Println("接收到请求的URI,Host,RemoteAddr分别为：",oReq.RequestURI, oReq.Host, oReq.RemoteAddr)
 	fmt.Println("接收到请求体长度为:",oReq.ContentLength)
+	appKey := "12345678901234567890"
 	oReq.ParseForm()
-	fmt.Println(oReq.PostForm)
+	makeParams(oReq.PostForm, appKey)
+/*
 	fmt.Println(oReq.PostFormValue("firstname"))
 	
 	transport := &http.Transport{
@@ -53,10 +89,11 @@ func (p *Pxy) ServeHTTP(nRw http.ResponseWriter, oReq *http.Request) {
 	nRw.WriteHeader(resp.StatusCode)
 	io.Copy(nRw, resp.Body)
 	resp.Body.Close()
+*/
 }
 
 func main() {
 	fmt.Println("代理端口 :8080")
 	http.Handle("/", &Pxy{})
-	http.ListenAndServe("127.0.0.1:8080", nil)
+	http.ListenAndServe(":8080", nil)
 }
