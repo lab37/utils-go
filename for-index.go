@@ -24,8 +24,9 @@ func main() {
 													if w != e && w != r && w != t && w != y && e != r && e != t && e != y && r != t && r != y && t != y {
 														tmp = a[i][j] + b[i][w] + a[i][k]
 
-														if tmp == a[i][k]+b[i][e]+a[i][m] && tmp == a[i][m]+b[t][r]+a[i][n] && tmp == a[i][n]+b[i][t]+a[i][q] && tmp == a[i][q]+b[i][y]+a[i][j] {
+														if tmp == a[i][k]+b[i][e]+a[i][m] && tmp == a[i][m]+b[i][r]+a[i][n] && tmp == a[i][n]+b[i][t]+a[i][q] && tmp == a[i][q]+b[i][y]+a[i][j] {
 															fmt.Println(a[i][j], b[i][w], a[i][k], b[i][e], a[i][m], b[i][r], a[i][n], b[i][t], a[i][q], b[i][y])
+
 														}
 													}
 
